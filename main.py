@@ -1,17 +1,17 @@
 from api import *
 import search
-from colorama import Fore, init
+from colorama import Fore
+from tqdm import tqdm
 from threading import Thread
-init()
 
 maxthreads = 4
 
 def downloadcomics(u=None, n=None):
     if u is None:
-        print(Fore.GREEN + "Enter lastest URL for comic")
+        print(Fore.GREEN + "Enter lastest URL for comic" + Fore.RESET)
         u = input('url: ')
     if n is None:
-        print(Fore.CYAN + "Enter the number of last issue downloaded (skippable)")
+        print(Fore.CYAN + "Enter the number of last issue downloaded (skippable)" + Fore.RESET)
         n = input('iss: ')
         if n == '':
             n = 0
@@ -24,7 +24,8 @@ def downloadcomics(u=None, n=None):
     end = n
     year = info[3]
     dlinks = []
-    for i in range(sta,end,-1):
+    print(Fore.YELLOW + "Getting download links..." + Fore.RESET)
+    for i in tqdm(range(sta,end,-1)):
         while True:
             r = get(base + f"/{info[1]}-{i}-{year}/")
             if r != None:
@@ -32,9 +33,9 @@ def downloadcomics(u=None, n=None):
             year -= 1
         urls = search.url(r)
         dlinks.append((urls[0][0],i))
-    for l in dlinks:
-        download(l, info) # add multi-threading here
-    print(Fore.GREEN + "Download complete")
+    print(Fore.YELLOW + "Downloading..." + Fore.RESET)
+    downthread(dlinks, info)
+    print(Fore.GREEN + "Download complete" + Fore.RESET)
         
 if __name__ == "__main__":
     downloadcomics()
